@@ -1,6 +1,7 @@
 #include <iostream>
 #include <utility>
 #include <iterator>
+#include <vector>
 
 using namespace std;
 
@@ -11,6 +12,16 @@ class Map{
 		struct ValueType{
 			pair<const Key_T, Mapped_T>types;
 		};
+		struct node{
+			Key_T key;
+			Mapped_T val;
+			vector<node*> forward;
+			node(int k, Key_T v, int level){
+
+			}
+			vector<node*> forwrad;
+
+		};
 		Map();
 		Map(const Map& addr);
 		Map &operator=(const Map & addr);
@@ -20,6 +31,22 @@ class Map{
 		size_t size() const;
 		bool empty() const;
 	//nested_classes:
+		class Skip_list{
+			public:
+				Skip_list();
+				~Skip_list();
+				void print();
+				node* find(Key_T key);
+				void insert(Key_T key, Mapped_T val);
+				void erase(Key_T key);
+				node* head;
+				node* tail;
+				int randomLevel();
+				int nodeLevel(const vector<node*> v);
+				node* makeNode(Key_T key, Mapped_T val, int level);
+				float probability;
+				int maxLevel;
+		};
 		class Iterator{
 			public:
 				Iterator(const Iterator& addr);
