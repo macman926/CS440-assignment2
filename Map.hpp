@@ -16,11 +16,9 @@ class Map{
 			Key_T key;
 			Mapped_T val;
 			vector<node*> forward;
-			node(int k, Key_T v, int level){
-
+			node(Key_T k, Mapped_T v, int level): key(k), val(v) {
+				for(int i = 0; i < level; ++i) forward.emplace_back(nullptr);
 			}
-			vector<node*> forwrad;
-
 		};
 		Map();
 		Map(const Map& addr);
