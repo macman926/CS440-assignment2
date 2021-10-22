@@ -2,6 +2,7 @@
 #include <utility>
 #include <iterator>
 #include <vector>
+#include <limits>
 
 using namespace std;
 
@@ -20,30 +21,36 @@ class Map{
 				for(int i = 0; i < level; ++i) forward.emplace_back(nullptr);
 			}
 		};
-		Map();
+		node* head;
+		node* tail;
+		float probability;
+		int maxLevel;
+		Map(): probability(0.5), maxLevel(16){
+			//*****Chance to segfault for adding uninitialised data
+			head = nullptr;
+			tail = nullptr;
+		}
 		Map(const Map& addr);
 		Map &operator=(const Map & addr);
 		Map(initializer_list<pair<const Key_T, Mapped_T>>);
-		~Map();
+		~Map(){
+			delete head;
+			delete tail;
+		}
 	//size:
 		size_t size() const;
 		bool empty() const;
 	//nested_classes:
 		class Skip_list{
 			public:
-				Skip_list();
 				~Skip_list();
 				void print();
 				node* find(Key_T key);
 				void insert(Key_T key, Mapped_T val);
 				void erase(Key_T key);
-				node* head;
-				node* tail;
 				int randomLevel();
 				int nodeLevel(const vector<node*> v);
 				node* makeNode(Key_T key, Mapped_T val, int level);
-				float probability;
-				int maxLevel;
 		};
 		class Iterator{
 			public:
@@ -89,8 +96,14 @@ class Map{
 				const ValueType& operator*() const;
 				const ValueType* operator->() const;
 		};
-
-	//iterators:
+	//Iterators:
+		Iterator begin();
+		Iterator end();
+		ConstIterator begin() const;
+		ConstIterator end() const;
+		ReverseIterator rbegin();
+		ReverseIterator rend();
+	//Element Access:
 		Iterator find(const Key_T& addr);
 		const Iterator find(const Key_T& addr) const;
 		Mapped_T &at(const Key_T &) const;

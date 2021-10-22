@@ -1,7 +1,7 @@
-all: minimal morseex test test-kec test-scaling
+all: minimal morseex test test-kec test-scaling myTest 
 
 myTest: myTest.cpp Map.hpp
-	g++ -o myTest Map.hpp
+	g++ -Wall -Wpedantic -Wextra -Werror -o myTest myTest.cpp
 minimial: minimal.cpp Map.hpp
 	g++ -o minimal minimal.cpp
 morseex: morseex.cpp Map.hpp

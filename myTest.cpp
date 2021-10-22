@@ -1,6 +1,10 @@
 #include <iostream>
+#include <string>
 #include "Map.hpp"
 
-int main(int argc, char ** argv){
+int main(){
+	Map <int,string> m;
+
+	m.~Map();
 	return 0;
 }
