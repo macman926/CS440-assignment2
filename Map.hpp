@@ -80,28 +80,70 @@ class Map{
 
 		}
 		void insert(Key_T key, Mapped_T val){
-			
+			key = -1;
+			val = 1;
+			key++;
 		}
 		Map(initializer_list<pair<const Key_T, Mapped_T>> l): probability(0.5), maxLevel(16){
 			//Potentially could set the head and tail to the same node and perhaps create an infinte loop?
-			Key_T headKey = numeric_limits<Key_T>::min();
-			head = new node(headKey, l.begin()->second, maxLevel);
-			Key_T tailKey = numeric_limits<Key_T>::max();
-			tail = new node(tailKey, l.end()->second, maxLevel);
+			//Key_T headKey = numeric_limits<Key_T>::min();
+			head = new node(l.begin()->first, l.begin()->second, maxLevel);
+			auto lastElem = l.end()-sizeof(l.begin());
+			tail = new node(lastElem->first, lastElem->second,maxLevel);
 			for(size_t i = 0; i <  head->forward.size(); ++i){
 				head->forward[i] = tail;
 			}
+			pair<Key_T,Mapped_T> prev;
 			for(auto curr : l){
-				if((head->key != curr.first && head->val != curr.second) || (tail->key != curr.first && tail->val != curr.second)){
+				if(head->key != curr.first && head->val != curr.second){
 					insert(curr.first, curr.second);
-					cout << "inserted element from init that isnt head or tail" << endl;
+					cout << "inserted key:" << curr.first << " val: " << curr.second <<  endl;
+					prev = curr;
 				}
 			}
+			tail = new node(prev.first, prev.second, maxLevel);
 		}
 		~Map(){
 			delete head;
 			delete tail;
 			cout << "Map has been destroyed" <<endl;
+		}
+		Key_T randomLevel(){
+			Key_T v = 1;
+			while((((Key_T)std::rand()/ RAND_MAX)) < probability && abs(v) < maxLevel){
+				v += 1;
+			}
+			return abs(v);
+		}
+		Key_T nodeLevel(const vector<node*> v){
+			Key_T currentLevel = 1;
+			Key_T tailKey = numeric_limits<Ket_T>::max();
+			if(v[0]->key == tailKey){
+				return currentLevel;
+			}
+			for(size_t i = 0; i < v.size(); ++i){
+				if(v[i] != nullptr && v[i]->key != tailKey){
+					++currentLevel;
+				}else{
+					break;
+				}
+			}
+			return currentLevel;
+		}
+		void print(){
+			node* list = head;
+			int lineLength = 1;
+			cout << "{";
+			while(list->forward[0] != nullptr){
+				cout << "value: " << list->forward[0]->value
+				<<", key: "<< list->fowrad[0]->key
+				<<", level: " nodeLevel(list->forward);
+
+				list = list->forward[0];
+				if(list->forward[0] != nullptr) cout<<" :";
+				if(++lineLength %2 == 0) cout<<"\n";
+			}
+			cout << "}" << endl;;
 		}
 	//size:
 		size_t size() const;
@@ -109,12 +151,8 @@ class Map{
 	//nested_classes:
 		class Skip_list{
 			public:
-				~Skip_list();
-				void print();
 				node* find(Key_T key);
 				void erase(Key_T key);
-				int randomLevel();
-				int nodeLevel(const vector<node*> v);
 				node* makeNode(Key_T key, Mapped_T val, int level);
 		};
 		class Iterator{
@@ -174,7 +212,9 @@ class Map{
 		Mapped_T &at(const Key_T &) const;
 		Mapped_T &operator[](const Key_T &);
 	//modifiers:
-		pair<Iterator, bool> insert(const ValueType &);
+		pair<Iterator, bool> insert(const ValueType &){
+			
+		}
 		template <typename IT_T>
 		void insert(IT_T range_beg, IT_T range_end);
 		void erase(Iterator pos);
