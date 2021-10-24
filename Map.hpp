@@ -3,6 +3,7 @@
 #include <iterator>
 #include <vector>
 #include <limits>
+#include <initializer_list>
 
 using namespace std;
 
@@ -29,13 +30,78 @@ class Map{
 			//*****Chance to segfault for adding uninitialised data
 			head = nullptr;
 			tail = nullptr;
+			for(size_t i = 0; i < head->forward.size(); ++i){
+				head->forward[i] = tail;
+			}
 		}
-		Map(const Map& addr);
-		Map &operator=(const Map & addr);
-		Map(initializer_list<pair<const Key_T, Mapped_T>>);
+		Map(const Map& m): probability(0.5), maxLevel(16){
+			if(m->head != nullptr){
+				head->key = m->head->key;
+				head->val = m->head->val;
+			}
+			else{
+				head = nullptr;
+			}
+			if(m->tail != nullptr){
+				tail->key = m->tail->key;
+				tail->val = m->tail->val;
+			}
+			else{
+				tail = nullptr;
+			}
+			for(int i = 0; i < m->head->forward.size(); ++i){
+				head->foward[i] = tail;;
+			}
+		}
+		Map &operator=(const Map& m){
+			probability = 0.5;
+			maxLevel = 16;
+			if(m->head != nullptr){
+				Key_T headKey = numeric_limits<Key_T>::min();
+				head = new node(headKey, m->head->val, maxLevel);
+			}
+			else{
+				head = nullptr;
+			}
+			if(m->tail != nullptr){
+				Key_T tailKey = numeric_limits<Key_T>::max();
+				tail = new node(tailKey, m->tail->val, maxLevel);
+			}
+			else{
+				tail = nullptr;
+			}
+			Key_T tempk;
+			Mapped_T tempv;
+			for(int i = 0; i < m->head->forward.size(); ++i){
+				tempk = m->forward[i]->key;
+				tempv = m->foward[i]->key;
+				head->forward[i] = new node(tempk, tempv, maxLevel);
+			}
+
+		}
+		void insert(Key_T key, Mapped_T val){
+			
+		}
+		Map(initializer_list<pair<const Key_T, Mapped_T>> l): probability(0.5), maxLevel(16){
+			//Potentially could set the head and tail to the same node and perhaps create an infinte loop?
+			Key_T headKey = numeric_limits<Key_T>::min();
+			head = new node(headKey, l.begin()->second, maxLevel);
+			Key_T tailKey = numeric_limits<Key_T>::max();
+			tail = new node(tailKey, l.end()->second, maxLevel);
+			for(size_t i = 0; i <  head->forward.size(); ++i){
+				head->forward[i] = tail;
+			}
+			for(auto curr : l){
+				if((head->key != curr.first && head->val != curr.second) || (tail->key != curr.first && tail->val != curr.second)){
+					insert(curr.first, curr.second);
+					cout << "inserted element from init that isnt head or tail" << endl;
+				}
+			}
+		}
 		~Map(){
 			delete head;
 			delete tail;
+			cout << "Map has been destroyed" <<endl;
 		}
 	//size:
 		size_t size() const;
@@ -46,7 +112,6 @@ class Map{
 				~Skip_list();
 				void print();
 				node* find(Key_T key);
-				void insert(Key_T key, Mapped_T val);
 				void erase(Key_T key);
 				int randomLevel();
 				int nodeLevel(const vector<node*> v);
